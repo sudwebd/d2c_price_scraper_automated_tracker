@@ -1,0 +1,6 @@
+undetected_chromedriver
+selenium
+simplejson
+pandas
+gspread
+oauth2client

@@ -1,0 +1,4 @@
+__pycache__/
+venv/
+service_account_credentials.json
+sneakers_data*
