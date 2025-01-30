@@ -1,4 +1,5 @@
 __pycache__/
 venv/
-service_account_credentials.json
-sneakers_data*
+keys/service_account_credentials.json
+keys/token.json
+keys/oauth2_credentials.json

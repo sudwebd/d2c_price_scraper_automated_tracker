@@ -2,10 +2,12 @@ import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, WebDriverException
+from selenium.webdriver.remote.webdriver import WebDriver
 import time
 import logging
 import json
 import re
+from typing import List, Dict
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -13,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 SCROLL_PAUSE_TIME = 5
 PAGE_LOAD_TIMEOUT = 10
 
-def _scroll_to_load_content(driver):
+def _scroll_to_load_content(driver: WebDriver) -> None:
     """
     Scrolls the webpage to load all dynamic content.
     """
@@ -31,7 +33,7 @@ def _scroll_to_load_content(driver):
         current_height = new_height
     logging.info("Page loaded successfully")
 
-def _process_sneakers(driver):
+def _process_sneakers(driver: WebDriver) -> List[Dict[str, str]]:
     """
     Processes the sneaker elements on the webpage and extracts relevant information.
     """
@@ -65,7 +67,7 @@ def _process_sneakers(driver):
         logging.error(f"An unexpected error occurred: {e}")
     return sneakers
 
-def _initialize_driver():
+def _initialize_driver() -> WebDriver:
     """
     Initializes the Chrome driver with the specified options.
     """
@@ -77,7 +79,7 @@ def _initialize_driver():
     driver.set_page_load_timeout(PAGE_LOAD_TIMEOUT)
     return driver
 
-def process_page(url):
+def process_page(url: str) -> List[Dict[str, str]]:
     """
     Loads the webpage and processes the sneaker data.
     """
