@@ -1,5 +1,2 @@
 __pycache__/
 venv/
-keys/service_account_credentials.json
-keys/token.json
-keys/oauth2_credentials.json
