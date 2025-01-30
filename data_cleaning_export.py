@@ -1,6 +1,7 @@
 import pandas as pd
 import gspread as gs
 import logging
+import os
 from price_scraper_dynamic import process_page
 from oauth2client.service_account import ServiceAccountCredentials
 from typing import Tuple, List
@@ -11,12 +12,11 @@ SHEET_NAME = "D2C Sneaker Data"
 FILE_NAME = "sneaker_data/sneakers_data.csv"
 LAST_FILE_NAME = "sneaker_data/last_sneakers_data.csv"
 SERVICE_ACCOUNT_FILE = "keys/service_account_credentials.json"
-SNEAKER_URL = "https://www.thesouledstore.com/men-footwear"
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def setup_google_oauth(scope: List[str]) -> gs.Client:
+def _setup_google_oauth(scope: List[str]) -> gs.Client:
     """
     Sets up the Google OAuth credentials.
 
@@ -29,7 +29,7 @@ def setup_google_oauth(scope: List[str]) -> gs.Client:
     credentials = ServiceAccountCredentials.from_json_keyfile_name(SERVICE_ACCOUNT_FILE, scope)
     return gs.authorize(credentials)
 
-def get_data(url: str) -> pd.DataFrame:
+def _get_data(url: str) -> pd.DataFrame:
     """
     Returns the scraped data as a DataFrame.
 
@@ -44,7 +44,7 @@ def get_data(url: str) -> pd.DataFrame:
     logging.info(f"Brief description of category wise sneaker data for thesouledstore:\n{df.groupby('category').describe()}")
     return df
 
-def export_to_csv(df: pd.DataFrame, file_name: str = FILE_NAME) -> None:
+def _export_to_csv(df: pd.DataFrame, file_name: str = FILE_NAME) -> None:
     """
     Exports the DataFrame to a CSV file.
 
@@ -55,14 +55,14 @@ def export_to_csv(df: pd.DataFrame, file_name: str = FILE_NAME) -> None:
     df.to_csv(file_name, index=False, mode='w')
     logging.info(f"Data exported to {file_name}")
 
-def export_to_google_sheets(df: pd.DataFrame) -> None:
+def _export_to_google_sheets(df: pd.DataFrame) -> None:
     """
     Exports the DataFrame to a Google Sheet.
 
     Parameters:
     df (pd.DataFrame): The DataFrame to export.
     """
-    gc = setup_google_oauth(SHEETS_SCOPE)
+    gc = _setup_google_oauth(SHEETS_SCOPE)
     sheet = gc.open(SHEET_NAME).sheet1
     sheet.clear()
     sheet.update([df.columns.values.tolist()] + df.values.tolist())
@@ -85,7 +85,7 @@ def process_sneaker_updates(url: str, debug: bool = True) -> Tuple[pd.DataFrame,
         logging.error(f"{FILE_NAME} not found. Ensure the file exists.")
         return pd.DataFrame(), pd.DataFrame(), pd.DataFrame()
 
-    new_df = get_data(url)
+    new_df = _get_data(url)
 
     new_sneakers = new_df[~new_df["name"].isin(last_df["name"])]
     removed_sneakers = last_df[~last_df["name"].isin(new_df["name"])]
@@ -100,13 +100,31 @@ def process_sneaker_updates(url: str, debug: bool = True) -> Tuple[pd.DataFrame,
     new_df["last_price"].fillna("", inplace=True)
     # Preserving last data frame for debug purposes
     if debug:
-        export_to_csv(last_df, LAST_FILE_NAME)
-    export_to_csv(new_df)
-    export_to_google_sheets(new_df)
+        _export_to_csv(last_df, LAST_FILE_NAME)
+    _export_to_csv(new_df)
+    _export_to_google_sheets(new_df)
 
     return new_sneakers, removed_sneakers, price_updates
 
-if __name__ == "__main__":
-    df = get_data(SNEAKER_URL)
-    export_to_csv(df)
-    export_to_google_sheets(df)
+def fetch_data_or_updates(url: str):
+    """
+    Fetches new sneaker data from the given URL or updates existing data.
+
+    This function either fetches new sneaker data for the first time and sets up 
+    initial data files, or processes updates to the existing sneaker data.
+
+    Args:
+        url (str): The URL to fetch sneaker data from.
+
+    Returns:
+        DataFrame: A pandas DataFrame containing the sneaker data.(For first call)
+        Tuple: A tuple containing DataFrames of new sneakers, removed sneakers, and price updates.(For subsequent calls)
+    """
+    # Sneaker data fetched first time(setup initial data files)
+    if not os.path.exists(FILE_NAME):
+        df = _get_data(url)
+        _export_to_csv(df)
+        _export_to_google_sheets(df)
+        return df
+    else:
+        return process_sneaker_updates(url)
