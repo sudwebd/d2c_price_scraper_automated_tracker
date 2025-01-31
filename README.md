@@ -29,8 +29,19 @@ Looking for a similar tool tailored to your business? I specialize in **Python a
 - **Logging & Error Handling**: Python `logging`  
 - **APIs Used**: Google Sheets API, Gmail API  
 
-## 📸 Demo (To Be Added)  
-**  
+## 📸 Demo
+- **Chrome Driver Run and Data Scraping Sample**:
+![Demo](sample_run/screen_capture.gif)  
+
+- **Alert Email Samples**
+
+### 1️⃣ **Inital Email of first time setup**
+
+![Demo](sample_run/initial_email.png)  
+
+### 2️⃣ **Email when there's an update**
+
+![Demo](sample_run/update_email.png)  
 
 ---
 
