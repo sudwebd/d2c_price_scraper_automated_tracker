@@ -30,16 +30,16 @@ Looking for a similar tool tailored to your business? I specialize in **Python a
 - **APIs Used**: Google Sheets API, Gmail API  
 
 ## 📸 Demo
-- **Chrome Driver Run and Data Scraping Sample**:
+## - **Chrome Driver Run and Data Scraping Sample**:
 ![Demo](sample_run/screen_capture.gif)  
 
-- **Alert Email Samples**
+## - **Alert Email Samples**
 
-### 1️⃣ **Inital Email of first time setup**
+- 1️⃣ **Inital Email of first time setup**
 
 ![Demo](sample_run/initial_email.png)  
 
-### 2️⃣ **Email when there's an update**
+- 2️⃣ **Email when there's an update**
 
 ![Demo](sample_run/update_email.png)  
 
